@@ -1,13 +1,21 @@
 // src/App.js
-import React from 'react';
+import { useState } from 'react';
 import Chatbot from './components/Chatbot';
 import TextEditor from './components/TextEditor';
 import './App.css';
 
 const App = () => {
+  const [codeContext, setCodeContext] = useState("");
+  const [llmResponse, setLlmResponse] = useState("");
+  
   const handleChange = (newContent) => {
+    setCodeContext(newContent);
     console.log("Editor content:", newContent);
   };
+
+  const handleSend = (prompt) => {
+    setLlmResponse(prompt + "\n" + codeContext)
+  }; 
 
   const sampleCode = ` 
 package main\n
@@ -32,13 +40,13 @@ func main() {\n
   return (
     <div className="app-container">
       <div className="component-container">
-        <Chatbot />
+        <Chatbot onSend={handleSend}/>
       </div>
       <div className="component-container">
-        <TextEditor placeholder={sampleCode} onChange={handleChange} />
+        <TextEditor value={sampleCode} editable="true" onChange={handleChange} />
       </div>
       <div className="component-container">
-        <TextEditor placeholder="Type something here..." onChange={handleChange} />
+        <TextEditor value={llmResponse} editable="false"/>
       </div>
     </div>
   );

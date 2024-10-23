@@ -2,7 +2,7 @@
 import React, { useState } from "react";
 import "./Chatbot.css";  // You can add custom styles in this file
 
-const Chatbot = () => {
+const Chatbot = ({ onSend }) => {
   // State to hold the user input and chat history
   const [input, setInput] = useState("");
   const [messages, setMessages] = useState([
@@ -25,6 +25,7 @@ const Chatbot = () => {
     setTimeout(() => {
       const botResponse = { text: `You said: ${input}`, sender: "bot" };
       setMessages((prevMessages) => [...prevMessages, botResponse]);
+      onSend(input);
     }, 500);
   };
 
