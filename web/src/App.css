@@ -1,0 +1,27 @@
+/* src/App.css */
+.app-container {
+  display: flex;
+  justify-content: space-between;
+  padding: 20px;
+  width: 100%;
+  margin: 0 auto;
+}
+
+/* Each component (FileEditors and Chatboat) will take 31% of the width */
+.component-container {
+  width: 31%; /* 33% width minus margins */
+  margin: 0 1%; /* Small margin between components */
+  background-color: #f0f0f0;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+}
+
+/* Ensure that both components are of equal height if needed */
+.component-container > div {
+  flex: 1;
+}
