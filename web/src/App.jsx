@@ -15,12 +15,19 @@ const App = () => {
   const handleCodePromptInput = (codeText) => {
     setCodePrompt(codeText);
   };
-  
+
   const handlePromptSubmit = (promptText) => {
+    // Call API to get response
+    const modelResponse = fetchApiResponse(promptText);
+    //setCodeResponse(modelResponse);
+  }
+
+    
+    /*
     setCodeResponse(promptText);
     const diffResult = compareCode(codePrompt, promptText);
     setCodeDiff(diffResult);
-  };
+    */
 
   const sampleCode = ` 
 func main() {
@@ -51,6 +58,22 @@ func main() {
   );
 };
 
+const fetchApiResponse = async (promptText) => {
+    // Simulate API call to a Gemini service
+    try {
+      const response = await fetch("http://localhost:8080/generate", {
+        method: "POST",
+        body: JSON.stringify({ message: promptText }),
+        headers: { "Content-Type": "application/json" }
+      });
+      const data = await response.json();
+      console.log(data);
+    }
+    catch (error) {
+      console.error('Error:', error);
+    }
+};
+
 const compareCode = (before, after) => {
   const lineDiff = Diff.diffLines(before, after);
   let lineResult = lineDiff.map((part, index) => {
@@ -62,6 +85,6 @@ const compareCode = (before, after) => {
     );
   });
   return lineResult;
-}
+};
 
 export default App;
