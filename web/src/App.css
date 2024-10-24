@@ -1,8 +1,8 @@
 /* src/App.css */
-.app-container {
+.editors-container {
   display: flex;
   justify-content: space-between;
-  padding: 20px;
+  padding: 10px; 
   width: 100%;
   margin: 0 auto;
 }
@@ -25,3 +25,15 @@
 .component-container > div {
   flex: 1;
 }
+
+/* Code Diff styling */
+.added {
+  color: green;
+  font-weight: bold;
+}
+
+.removed {
+  color: red;
+  text-decoration: line-through;
+}
+

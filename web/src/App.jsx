@@ -1,55 +1,67 @@
 // src/App.js
 import { useState } from 'react';
-import Chatbot from './components/Chatbot';
+import * as Diff from 'diff';
+
+import PromptInputBox from './components/PromptInputBox';
 import TextEditor from './components/TextEditor';
+
 import './App.css';
 
 const App = () => {
-  const [codeContext, setCodeContext] = useState("");
-  const [llmResponse, setLlmResponse] = useState("");
+  const [codePrompt, setCodePrompt] = useState("");
+  const [codeResponse, setCodeResponse] = useState("");
+  const [codeDiff, setCodeDiff] = useState("");
   
-  const handleChange = (newContent) => {
-    setCodeContext(newContent);
-    console.log("Editor content:", newContent);
+  const handleCodePromptInput = (codeText) => {
+    setCodePrompt(codeText);
+  };
+  
+  const handlePromptSubmit = (promptText) => {
+    setCodeResponse(promptText);
+    const diffResult = compareCode(codePrompt, promptText);
+    setCodeDiff(diffResult);
   };
 
-  const handleSend = (prompt) => {
-    setLlmResponse(prompt + "\n" + codeContext)
-  }; 
-
   const sampleCode = ` 
-package main\n
-
-func main() {\n
-    fs := http.FileServer(http.Dir("./static"))\n\r
-    http.Handle("/", fs)
-
+func main() {
 	port := os.Getenv("PORT")
-	if port == "" {\r\n
+	if port == "" {
 		port = "8080"
 		log.Printf("Defaulting to port %s", port)
 	}
-
-	log.Printf("Listening on port %s", port)
-	if err := http.ListenAndServe(":"+port, nil); err != nil {
-		log.Fatal(err)
-	}
 }
-`;
-
+`
   return (
-    <div className="app-container">
-      <div className="component-container">
-        <Chatbot onSend={handleSend}/>
+    <div className="app-container" >
+      <div>
+        <PromptInputBox onSubmit={handlePromptSubmit}/>
       </div>
-      <div className="component-container">
-        <TextEditor value={sampleCode} editable="true" onChange={handleChange} />
-      </div>
-      <div className="component-container">
-        <TextEditor value={llmResponse} editable="false"/>
+      <div className="editors-container">
+        <div className="component-container">
+          <TextEditor value={sampleCode} editable="true" onInput={handleCodePromptInput}/>
+        </div>
+        <div className="component-container">
+          <TextEditor value={codeResponse} editable="false"/>
+        </div>
+        <div className="component-container">
+          <TextEditor value={codeDiff} editable="false"/>
+        </div>
       </div>
     </div>
   );
 };
+
+const compareCode = (before, after) => {
+  const lineDiff = Diff.diffLines(before, after);
+  let lineResult = lineDiff.map((part, index) => {
+    const className = part.added ? 'added' : part.removed ? 'removed' : '';
+    return (
+      <div key={index} className={className}>
+        {part.value}
+      </div>
+    );
+  });
+  return lineResult;
+}
 
 export default App;

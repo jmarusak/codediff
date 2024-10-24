@@ -1,0 +1,25 @@
+.prompt-inputbox-container {
+  margin: 20px;
+}
+
+.prompt-inputbox-textarea {
+  width: 100%; /* Make textarea full width */
+  padding: 10px;
+  margin-bottom: 10px; /* Space between textarea and button */
+  resize: vertical; /* Allow resizing vertically */
+}
+
+.prompt-submit-button {
+  padding: 10px 20px;
+  background-color: #007BFF;
+  color: #fff;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  /* Align left (default behavior) */
+}
+
+.prompt-submit-button:hover {
+  background-color: #0056b3;
+}
+

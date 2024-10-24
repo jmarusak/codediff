@@ -1,14 +1,14 @@
-// src/components/TextEditor.jsx
+// TextEditor.jsx
 
 import React, { useState, useRef, useEffect } from "react";
 import "./TextEditor.css";
 
-const TextEditor = ({ value, editable, onChange }) => {
+const TextEditor = ({ value, editable, onInput }) => {
   const editorRef = useRef(null);
   
   const handleInput = () => {
     const text = editorRef.current.innerText;
-    onChange(text);
+    onInput(text);
   };
 
   return (
@@ -18,6 +18,7 @@ const TextEditor = ({ value, editable, onChange }) => {
       onInput={handleInput}
       ref={editorRef}
       suppressContentEditableWarning={true}
+      spellCheck="false"
     >
       {value}
     </div>
