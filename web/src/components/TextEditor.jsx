@@ -1,6 +1,4 @@
-// TextEditor.jsx
-
-import React, { useState, useRef, useEffect } from "react";
+import { useRef } from "react";
 import "./TextEditor.css";
 
 const TextEditor = ({ value, editable, onInput }) => {

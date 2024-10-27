@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import "./PromptBox.css";
 
 const PromptBox = ({ onSubmit }) => {
@@ -23,6 +23,6 @@ const PromptBox = ({ onSubmit }) => {
       </button>
     </div>
   );
-}
+};
 
 export default PromptBox;

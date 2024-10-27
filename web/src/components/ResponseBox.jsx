@@ -1,4 +1,3 @@
-import React, { useState } from "react";
 import "./ResponseBox.css";
 
 const ResponseBox = ({ value }) => {
@@ -7,6 +6,6 @@ const ResponseBox = ({ value }) => {
       <div className="response-div" dangerouslySetInnerHTML={{ __html: value }} />
     </div>
   );
-}
+};
 
 export default ResponseBox;

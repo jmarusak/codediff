@@ -1,4 +1,4 @@
-module codediff
+module codepal
 
 go 1.22.6
 

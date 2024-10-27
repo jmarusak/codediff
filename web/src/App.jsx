@@ -1,11 +1,9 @@
-// src/App.js
 import { useState } from 'react';
 import * as Diff from 'diff';
 
 import PromptBox from './components/PromptBox';
 import ResponseBox from './components/ResponseBox';
 import TextEditor from './components/TextEditor';
-
 import './App.css';
 
 const App = () => {
@@ -13,7 +11,7 @@ const App = () => {
   const [textResponse, setTextResponse] = useState("");
   const [codeResponse, setCodeResponse] = useState("");
   const [codeDiff, setCodeDiff] = useState("");
-  
+
   const handleCodePromptInput = (codePrompt) => {
     setCodePrompt(codePrompt);
   };
@@ -21,7 +19,6 @@ const App = () => {
   const handlePromptSubmit = async (promptText) => {
     const promptFinal = `${promptText}, return entire modifies context\n\nCONTEXT:\n${codePrompt}\nOUTPUT INSTRUCTION: Format output in JSON schema {"code":sting, "explanation":string}\n`;
 
-    // Simulate API call to a Gemini service
     try {
       const response = await fetch("http://localhost:8080/generate", {
         method: "POST",
@@ -39,16 +36,7 @@ const App = () => {
       console.error('Error:', error);
     }
   };
-    
-  const sampleCode = ` 
-func main() {
-	port := os.Getenv("PORT")
-	if port == "" {
-		port = "8080"
-		log.Printf("Defaulting to port %s", port)
-	}
-}
-`
+
   return (
     <div className="app-container" >
       <div>
@@ -57,7 +45,7 @@ func main() {
       </div>
       <div className="editors-container">
         <div className="component-container">
-          <TextEditor value={sampleCode} editable="true" onInput={handleCodePromptInput}/>
+          <TextEditor value={codePrompt} editable="true" onInput={handleCodePromptInput}/>
         </div>
         <div className="component-container">
           <TextEditor value={codeResponse} editable="false"/>
