@@ -1,7 +1,7 @@
 import React, { useState } from "react";
-import "./PromptInputBox.css";
+import "./PromptBox.css";
 
-const PromptInputBox = ({ onSubmit }) => {
+const PromptBox = ({ onSubmit }) => {
   const [prompt, setPrompt] = useState("");
 
   const handleSubmit = () => {
@@ -25,4 +25,4 @@ const PromptInputBox = ({ onSubmit }) => {
   );
 }
 
-export default PromptInputBox;
+export default PromptBox;

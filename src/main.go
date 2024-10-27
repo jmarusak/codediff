@@ -1,17 +1,29 @@
 package main
 
 import (
+	"context"
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
 	"log"
 	"net/http"
+	"os"
+
+	"github.com/google/generative-ai-go/genai"
+	"google.golang.org/api/option"
 )
 
-// Define a struct to represent the expected JSON structure
-type RequestData struct {
-	Message string `json:"message"` // This maps to the "message" field in the incoming JSON
+// API request struct
+type PromptRequest struct {
+	Message string `json:"message"`
 }
+
+// Google Gemini API client and model instance
+var (
+	ctx    context.Context
+	client *genai.Client
+	model  *genai.GenerativeModel
+)
 
 // Middleware to handle CORS
 func corsMiddleware(next http.Handler) http.Handler {
@@ -30,9 +42,6 @@ func corsMiddleware(next http.Handler) http.Handler {
 }
 
 func generateHandler(w http.ResponseWriter, r *http.Request) {
-	//		response := map[string]interface{}{"status": "success", "message": "Hello World!"}
-
-	// Request
 	if r.Method != http.MethodPost {
 		http.Error(w, "Invalid request method", http.StatusMethodNotAllowed)
 		return
@@ -47,33 +56,81 @@ func generateHandler(w http.ResponseWriter, r *http.Request) {
 	defer r.Body.Close()
 
 	// Parse the JSON body into a Go struct
-	var requestData RequestData
-	err = json.Unmarshal(body, &requestData)
+	var promptRequest PromptRequest
+	err = json.Unmarshal(body, &promptRequest)
 	if err != nil {
 		http.Error(w, "Invalid JSON format", http.StatusBadRequest)
 		return
 	}
 
-	// Response
-	/*
-		jsonData, err := json.Marshal(body)
-		if err != nil {
-			http.Error(w, "Failed to marshal response: %v", http.StatusInternalServerError)
-			return
-		}
-	*/
+	// Actuall prompt in the request
+	prompt := promptRequest.Message
 
-	_, err = w.Write(body)
+	// Call the GenerativeAI API to generate content
+	resp, err := model.GenerateContent(ctx, genai.Text(prompt))
+	if err != nil {
+		fmt.Fprintf(os.Stderr, "Error generating content: %v", err)
+		return
+	}
+
+	// Extract the response from the API response
+	var response []byte
+	for _, cand := range resp.Candidates {
+		if cand.Content != nil {
+			for _, part := range cand.Content.Parts {
+				if txt, ok := part.(genai.Text); ok {
+					response = []byte(txt)
+				}
+			}
+		}
+	}
+
+	fmt.Print(prompt)
+	fmt.Println("-----------------------------------")
+	fmt.Print(string(response))
+
+	// Write the response back to the client
+	_, err = w.Write(response)
 	if err != nil {
 		log.Printf("Failed to write response: %v", err)
 	}
 }
 
+func initGemini() error {
+	ctx = context.Background()
+
+	// Retrieve API key from environment variable
+	apiKey := os.Getenv("GEMINI_API_KEY")
+	if apiKey == "" {
+		return fmt.Errorf("missing GEMINI_API_KEY environment variable")
+	}
+
+	// Create a GenerativeAI client with the API key
+	var err error
+	client, err = genai.NewClient(ctx, option.WithAPIKey(apiKey))
+	if err != nil {
+		return fmt.Errorf("error creating client: %v", err)
+	}
+
+	// Get the "gemini-1.5-flash" model
+	model = client.GenerativeModel("gemini-1.5-flash")
+
+	// Set response MIME type to JSON
+	model.ResponseMIMEType = "application/json"
+
+	return nil
+}
+
 func main() {
 	mux := http.NewServeMux()
 	handler := corsMiddleware(mux)
-
 	mux.HandleFunc("/generate", generateHandler)
+
+	// Initialize context and client only once
+	if err := initGemini(); err != nil {
+		fmt.Fprintf(os.Stderr, "Error initializing Gemini client: %v", err)
+		return
+	}
 
 	fmt.Println("Server starting on port 8080...")
 	log.Fatal(http.ListenAndServe(":8080", handler))

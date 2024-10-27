@@ -2,33 +2,44 @@
 import { useState } from 'react';
 import * as Diff from 'diff';
 
-import PromptInputBox from './components/PromptInputBox';
+import PromptBox from './components/PromptBox';
+import ResponseBox from './components/ResponseBox';
 import TextEditor from './components/TextEditor';
 
 import './App.css';
 
 const App = () => {
   const [codePrompt, setCodePrompt] = useState("");
+  const [textResponse, setTextResponse] = useState("");
   const [codeResponse, setCodeResponse] = useState("");
   const [codeDiff, setCodeDiff] = useState("");
   
-  const handleCodePromptInput = (codeText) => {
-    setCodePrompt(codeText);
+  const handleCodePromptInput = (codePrompt) => {
+    setCodePrompt(codePrompt);
   };
 
-  const handlePromptSubmit = (promptText) => {
-    // Call API to get response
-    const modelResponse = fetchApiResponse(promptText);
-    //setCodeResponse(modelResponse);
-  }
+  const handlePromptSubmit = async (promptText) => {
+    const promptFinal = `${promptText}, return entire modifies context\n\nCONTEXT:\n${codePrompt}\nOUTPUT INSTRUCTION: Format output in JSON schema {"code":sting, "explanation":string}\n`;
 
+    // Simulate API call to a Gemini service
+    try {
+      const response = await fetch("http://localhost:8080/generate", {
+        method: "POST",
+        body: JSON.stringify({ message: promptFinal }),
+        headers: { "Content-Type": "application/json" }
+      });
+      const data = await response.json();
+      setTextResponse(markdownToHtml(data.explanation));
+      setCodeResponse(data.code);
+
+      const diffResult = compareCode(codePrompt, data.code);
+      setCodeDiff(diffResult);
+    }
+    catch (error) {
+      console.error('Error:', error);
+    }
+  };
     
-    /*
-    setCodeResponse(promptText);
-    const diffResult = compareCode(codePrompt, promptText);
-    setCodeDiff(diffResult);
-    */
-
   const sampleCode = ` 
 func main() {
 	port := os.Getenv("PORT")
@@ -41,7 +52,8 @@ func main() {
   return (
     <div className="app-container" >
       <div>
-        <PromptInputBox onSubmit={handlePromptSubmit}/>
+        <PromptBox onSubmit={handlePromptSubmit}/>
+        <ResponseBox value={textResponse}/>
       </div>
       <div className="editors-container">
         <div className="component-container">
@@ -58,24 +70,8 @@ func main() {
   );
 };
 
-const fetchApiResponse = async (promptText) => {
-    // Simulate API call to a Gemini service
-    try {
-      const response = await fetch("http://localhost:8080/generate", {
-        method: "POST",
-        body: JSON.stringify({ message: promptText }),
-        headers: { "Content-Type": "application/json" }
-      });
-      const data = await response.json();
-      console.log(data);
-    }
-    catch (error) {
-      console.error('Error:', error);
-    }
-};
-
 const compareCode = (before, after) => {
-  const lineDiff = Diff.diffLines(before, after);
+  const lineDiff = Diff.diffLines(before, after, { ignoreWhitespace: true });
   let lineResult = lineDiff.map((part, index) => {
     const className = part.added ? 'added' : part.removed ? 'removed' : '';
     return (
@@ -85,6 +81,14 @@ const compareCode = (before, after) => {
     );
   });
   return lineResult;
+};
+
+const markdownToHtml = (markdownText) => {
+  const htmlText = markdownText
+    .replace(/\*\*(.*?)\*\*/g, '<b>$1</b>')
+    .replace(/`(.*?)`/g, '<span style="font-family: monospace; background-color: #f0f0f0;">$1</span>')
+    .replace(/\n/g, '<br>');
+  return '<p>' + htmlText + '</p>';
 };
 
 export default App;
