@@ -12,9 +12,9 @@ const PromptBox = ({ onSubmit }) => {
     <div className="prompt-inputbox-container">
       <textarea
         id="prompt"
-        rows="5"
+        rows="1"
         className="prompt-inputbox-textarea"
-        placeholder="Type your LLM prompt here..."
+        placeholder="Type your GPT prompt here..."
         value={prompt}
         onChange={(e) => setPrompt(e.target.value)}
       />

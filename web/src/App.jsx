@@ -20,7 +20,8 @@ const App = () => {
     const promptFinal = `${promptText}, return entire modifies context\n\nCONTEXT:\n${codePrompt}\nOUTPUT INSTRUCTION: Format output in JSON schema {"code":sting, "explanation":string}\n`;
 
     try {
-      const response = await fetch("http://localhost:8080/generate", {
+      const url = "http://localhost:8080/generate";
+      const response = await fetch(url, {
         method: "POST",
         body: JSON.stringify({ message: promptFinal }),
         headers: { "Content-Type": "application/json" }

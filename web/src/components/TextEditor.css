@@ -10,8 +10,3 @@
   overflow-x: auto;
   overflow-y: auto;
 }
-
-.text-editor:empty:before {
-  content: attr(placeholder);
-  color: #888;
-}
