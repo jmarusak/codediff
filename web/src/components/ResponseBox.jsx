@@ -3,7 +3,7 @@ import "./ResponseBox.css";
 const ResponseBox = ({ value }) => {
   return (
     <div className="response-container">
-      <div className="response-div" dangerouslySetInnerHTML={{ __html: value }} />
+      <div className="response" dangerouslySetInnerHTML={{ __html: value }} />
     </div>
   );
 };

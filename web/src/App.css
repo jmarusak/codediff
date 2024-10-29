@@ -1,4 +1,7 @@
-/* src/App.css */
+body {
+  background-color: #fafafa;
+}
+
 .editors-container {
   display: flex;
   justify-content: space-between;
@@ -7,10 +10,9 @@
   margin: 0 auto;
 }
 
-/* Each component (FileEditors and Chatboat) will take 31% of the width */
 .component-container {
-  width: 31%; /* 33% width minus margins */
-  margin: 0 1%; /* Small margin between components */
+  width: 31%;
+  margin: 0 1%;
   background-color: #f0f0f0;
   border: 1px solid #ddd;
   border-radius: 8px;
@@ -21,12 +23,11 @@
   justify-content: flex-start;
 }
 
-/* Ensure that both components are of equal height if needed */
 .component-container > div {
   flex: 1;
 }
 
-/* Code Diff styling */
+/* code diff styling */
 .added {
   color: green;
   font-weight: bold;
@@ -36,4 +37,3 @@
   color: red;
   text-decoration: line-through;
 }
-

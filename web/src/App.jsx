@@ -74,7 +74,7 @@ const compareCode = (before, after) => {
 const markdownToHtml = (markdownText) => {
   const htmlText = markdownText
     .replace(/\*\*(.*?)\*\*/g, '<b>$1</b>')
-    .replace(/`(.*?)`/g, '<span style="font-family: monospace; background-color: #f0f0f0;">$1</span>')
+    .replace(/`(.*?)`/g, '<span style="font-family: monospace; font-size: 13px; background-color: #e6e6e6;">$1</span>')
     .replace(/\n/g, '<br>');
   return '<p>' + htmlText + '</p>';
 };
