@@ -25,3 +25,5 @@
 *.out
 
 web
+.env
+app.yaml

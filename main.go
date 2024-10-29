@@ -117,13 +117,17 @@ func initGemini() error {
 
 	// Set response MIME type to JSON
 	model.ResponseMIMEType = "application/json"
-
 	return nil
 }
 
 func main() {
 	mux := http.NewServeMux()
 	handler := corsMiddleware(mux)
+
+	// Serve static files from the "./static" directory at the "/static" path
+	staticDir := http.FileServer(http.Dir("./static"))
+	mux.Handle("/", staticDir)
+
 	mux.HandleFunc("/generate", generateHandler)
 
 	// Initialize context and client only once
