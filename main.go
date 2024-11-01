@@ -8,6 +8,8 @@ import (
 	"log"
 	"net/http"
 	"os"
+	"bytes"
+	"strings"
 
 	"github.com/google/generative-ai-go/genai"
 	"google.golang.org/api/option"
@@ -74,23 +76,25 @@ func generateHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Extract the response from the API response
-	var response []byte
+	var response bytes.Buffer
 	for _, cand := range resp.Candidates {
 		if cand.Content != nil {
 			for _, part := range cand.Content.Parts {
 				if txt, ok := part.(genai.Text); ok {
-					response = []byte(txt)
+					response.WriteString(string(txt))
 				}
 			}
 		}
 	}
 
+	fmt.Println(strings.Repeat("*", 100))
 	fmt.Print(prompt)
-	fmt.Println("-----------------------------------")
-	fmt.Print(string(response))
+	fmt.Println(strings.Repeat("-", 100))
+	fmt.Print(response.String())
 
 	// Write the response back to the client
-	_, err = w.Write(response)
+	w.Header().Set("Content-Type", "application/json")
+	_, err = w.Write(response.Bytes())
 	if err != nil {
 		log.Printf("Failed to write response: %v", err)
 	}

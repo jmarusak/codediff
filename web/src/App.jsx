@@ -12,12 +12,12 @@ const App = () => {
   const [codeResponse, setCodeResponse] = useState("");
   const [codeDiff, setCodeDiff] = useState("");
 
-  const handleCodePromptInput = (codePrompt) => {
-    setCodePrompt(codePrompt);
+  const handleCodePromptInput = (codeText) => {
+    setCodePrompt(codeText)
   };
 
   const handlePromptSubmit = async (promptText) => {
-    const promptFinal = `${promptText}, return entire modifies context\n\nCONTEXT:\n${codePrompt}\nOUTPUT INSTRUCTION: Format output in JSON schema {"code":sting, "explanation":string}\n`;
+    const promptFinal = `${promptText}, output modified context as part of the response\n\nCONTEXT:\n${codePrompt}\n\nOUTPUT INSTRUCTION: Format output in JSON schema {"code":string, "explanation":string}\n`;
 
     try {
       const url = "http://localhost:8080/generate";
@@ -38,10 +38,26 @@ const App = () => {
     }
   };
 
+  const handlePasteContext = async () => {
+    const context = await navigator.clipboard.readText();
+    setCodePrompt(context)
+    
+    const diffResult = compareCode(context, codeResponse);
+    setCodeDiff(diffResult);
+  };
+
+  const handleCopyResponse = () => {
+    navigator.clipboard.writeText(codeResponse);
+  };
+
   return (
     <div className="app-container" >
       <div>
-        <PromptBox onSubmit={handlePromptSubmit}/>
+        <PromptBox
+          onSubmit={handlePromptSubmit}
+          onPaste={handlePasteContext}
+          onCopy={handleCopyResponse}
+        />
         <ResponseBox value={textResponse}/>
       </div>
       <div className="editors-container">
